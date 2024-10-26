@@ -2,3 +2,36 @@
 "title": 'Or'
 "description": '`Or` is a rule composer that combines the results of two rules. If either rule is satisfied, the `Or` rule is satisfied.'
 ---
+
+## Overview
+To create a rule that is satisfied when either a specific rule or another rule is met, you can use the `Or` Rule Composer.
+This composer allows you to combine multiple rules in a way that the overall condition is fulfilled when at least one of the individual rules within the composition is satisfied.
+
+## Example
+For example, let’s consider a case where we allow integers that are less than **10** or greater than **50**.
+
+```rust
+type Target = Refined<Or![LessRuleU8<10>, GreaterRuleU8<50>]>;
+```
+
+In this example, the `Target` type is defined as a refined type that only accepts integers that are less than **10** or greater than **50**.
+
+Let’s see how this rule works in practice.
+
+```rust
+fn or_example() -> Result<(), Error<u8>> {
+    let target = Target::new(5)?;
+    assert_eq!(target.into_value(), 5);
+
+    let target = Target::new(10);
+    assert!(target.is_err());
+
+    let target = Target::new(50);
+    assert!(target.is_err());
+
+    let target = Target::new(51)?;
+    assert_eq!(target.into_value(), 51);
+
+    Ok(())
+}
+```

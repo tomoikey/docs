@@ -2,3 +2,30 @@
 "title": 'Not'
 "description": '`Not` is a rule composer that negates the result of another rule.'
 ---
+
+## Overview
+To create a rule that is only satisfied when a specific rule is not met, you can use the `Not` Rule Composer.
+This composer allows you to negate the result of another rule.
+
+## Example
+For example, let’s consider a case where we only allow all numbers except **50**.
+
+```rust
+type Target = Refined<Not<EqualRuleU8<50>>>;
+```
+
+In this example, the `Target` type is defined as a refined type that only accepts numbers except **50**.
+
+Let’s see how this rule works in practice.
+
+```rust
+fn not_example() -> Result<(), Error<u8>> {
+    let target = Target::new(49)?;
+    assert_eq!(target.into_value(), 49);
+
+    let target = Target::new(50);
+    assert!(target.is_err());
+
+    Ok(())
+}
+```
