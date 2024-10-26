@@ -1,86 +1,141 @@
 ---
 title: 'Quickstart'
-description: 'Start building awesome documentation in under 5 minutes'
+description: 'Let''s start by creating your first code using `refined_type`.'
 ---
 
-## Setup your development
+### Dependence
+To handle JSON, let’s first add `serde` and `serde_json` to your project.
+```shell
+cargo add serde --features derive
+cargo add serde_json
+```
+Or add the following to your `Cargo.toml`:
+```toml
+[dependencies]
+serde = { version = "x.x.x", features = ["derive"] }
+serde_json = "x.x.x"
+```
 
-Learn how to update your docs locally and deploy them to the public.
+## Let's get started
+First, let’s envision a scenario where we validate incoming JSON data.
+For example, let’s say we want data that meets the following requirements.
 
-### Edit and preview
+* `name` field that is not empty.
+* `age` field that falls within the range of 18 to 80.
+* `friends` field containing at least one entry, each with a name that is not empty.
 
-<AccordionGroup>
-  <Accordion icon="github" title="Clone your docs locally">
-    During the onboarding process, we created a repository on your Github with
-    your docs content. You can find this repository on our
-    [dashboard](https://dashboard.mintlify.com). To clone the repository
-    locally, follow these
-    [instructions](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
-    in your terminal.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Preview changes">
-    Previewing helps you make sure your changes look as intended. We built a
-    command line interface to render these changes locally. 1. Install the
-    [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the
-    documentation changes locally with this command: ``` npm i -g mintlify ```
-    2. Run the following command at the root of your documentation (where
-    `mint.json` is): ``` mintlify dev ```
-  </Accordion>
-</AccordionGroup>
+We can define the rules for each field as follows:
 
-### Deploy your changes
+```rust
+use refined_type::rule::{MinMaxU8, NonEmptyString, NonEmptyVec};
+use serde::Deserialize;
 
-<AccordionGroup>
+#[derive(Debug, Deserialize)]
+struct Data {
+    name: NonEmptyString,
+    age: MinMaxU8<18, 80>,
+    friends: NonEmptyVec<NonEmptyString>,
+}
+```
 
-<Accordion icon="message-bot" title="Install our Github app">
-  Our Github app automatically deploys your changes to your docs site, so you
-  don't need to manage deployments yourself. You can find the link to install on
-  your [dashboard](https://dashboard.mintlify.com). Once the bot has been
-  successfully installed, there should be a check mark next to the commit hash
-  of the repo.
-</Accordion>
-<Accordion icon="rocket" title="Push your changes">
-  [Commit and push your changes to
-  Git](https://docs.github.com/en/get-started/using-git/pushing-commits-to-a-remote-repository#about-git-push)
-  for your changes to update in your docs site. If you push and don't see that
-  the Github app successfully deployed your changes, you can also manually
-  update your docs through our [dashboard](https://dashboard.mintlify.com).
-</Accordion>
+### Valid JSON case
+Now, let’s try to deserialize the valid JSON data.
 
-</AccordionGroup>
+```rust
+fn main() {
+    let json = r#"{
+        "name": "john",
+        "age": 55,
+        "friends": ["tom", "hanako"]
+    }"#;
+    let my_struct = serde_json::from_str::<Data>(json);
+    println!("{:?}", my_struct);
+}
+```
 
-## Update your docs
+```shell
+Ok(Data { name: Refined { value: "john" }, age: Refined { value: 55 }, friends: Refined { value: [Refined { value: "tom" }, Refined { value: "hanako" }] } })
+```
 
-Add content directly in your files with MDX syntax and React components. You can use any of our components, or even build your own.
+The JSON data meets the requirements, so it is successfully deserialized.
 
-<CardGroup>
+### Invalid JSON case
+Next, let’s try to deserialize JSON data that does not meet the requirements.
 
-<Card title="Style Your Docs" icon="paintbrush" href="/settings/global">
-  Add flair to your docs with personalized branding.
-</Card>
+#### `name` field is empty
+```rust
+fn main() {
+    let json = r#"{
+        "name": "",
+        "age": 55,
+        "friends": ["tom", ""]
+    }"#;
+    let my_struct = serde_json::from_str::<Data>(json);
+    println!("{:?}", my_struct);
+}
+```
 
-<Card
-  title="Add API Endpoints"
-  icon="square-code"
-  href="/api-playground/configuration"
->
-  Implement your OpenAPI spec and enable API user interaction.
-</Card>
+```shell
+$ cargo run
+Err(Error("Target satisfies the `Not` rule", line: 2, column: 18))
+```
 
-<Card
-  title="Integrate Analytics"
-  icon="chart-mixed"
-  href="/analytics/supported-integrations"
->
-  Draw insights from user interactions with your documentation.
-</Card>
+#### `age` field is out of range
+```rust
+fn main() {
+    let json = r#"{
+        "name": "john",
+        "age": 10,
+        "friends": ["tom", "hanako"]
+    }"#;
+    let my_struct = serde_json::from_str::<Data>(json);
+    println!("{:?}", my_struct);
+}
+```
 
-<Card
-  title="Host on a Custom Domain"
-  icon="browser"
-  href="/settings/custom-domain/subdomain"
->
-  Keep your docs on your own website's subdomain.
-</Card>
+```shell
+$ cargo run
+Err(Error("10 is not greater than 18", line: 3, column: 17))
+```
 
-</CardGroup>
+#### `friends` field is empty
+```rust
+fn main() {
+    let json = r#"{
+        "name": "john",
+        "age": 55,
+        "friends": []
+    }"#;
+    let my_struct = serde_json::from_str::<Data>(json);
+    println!("{:?}", my_struct);
+}
+```
+
+```shell
+$ cargo run
+Err(Error("Target satisfies the `Not` rule", line: 5, column: 5))
+```
+
+#### `friends` field is not empty, but the name is empty
+```rust
+fn main() {
+    let json = r#"{
+        "name": "john",
+        "age": 55,
+        "friends": ["tom", ""]
+    }"#;
+    let my_struct = serde_json::from_str::<Data>(json);
+    println!("{:?}", my_struct);
+}
+```
+
+```shell
+$ cargo run
+Err(Error("Target satisfies the `Not` rule", line: 4, column: 30))
+```
+
+### Summary
+By defining rules for each field, you can easily validate JSON data.
+This is just one example of how you can use `refined_type` to enhance your types.
+
+Enjoy a wonderful type life!

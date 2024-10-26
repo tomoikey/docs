@@ -1,71 +1,25 @@
 ---
 title: Introduction
-description: 'Welcome to the home of your new documentation'
+description: '`refined_type` is a library developed for Rust. It enhances your types, making them more robust and expanding the range of guarantees your applications can statically ensure.'
 ---
 
-<img
-  className="block dark:hidden"
-  src="/images/hero-light.svg"
-  alt="Hero Light"
-/>
-<img
-  className="hidden dark:block"
-  src="/images/hero-dark.svg"
-  alt="Hero Dark"
-/>
+## Overview
+You can create various rules for a certain type, such as phone numbers, addresses, times, and so on. Once you have established the rules, you can easily combine them.
 
-## Setting up
+Specifically, if you create rules for **non-empty strings** and **strings composed only of alphabets**, you do not need to redefine a new rule for **non-empty strings composed only of alphabets**.
 
-The first step to world-class documentation is setting up your editing environments.
+All rules can be arbitrarily combined and extended as long as the target type matches.
 
-<CardGroup cols={2}>
-  <Card
-    title="Edit Your Docs"
-    icon="pen-to-square"
-    href="https://mintlify.com/docs/quickstart"
-  >
-    Get your docs set up locally for easy development
-  </Card>
-  <Card
-    title="Preview Changes"
-    icon="image"
-    href="https://mintlify.com/docs/development"
-  >
-    Preview your changes before you push to make sure they're perfect
-  </Card>
-</CardGroup>
+Enjoy a wonderful type life!
 
-## Make it yours
+## Installation
+```shell
+cargo add refined_type
+```
 
-Update your docs to your brand and add valuable content for the best user conversion.
+Or add the following to your `Cargo.toml`:
 
-<CardGroup cols={2}>
-  <Card
-    title="Customize Style"
-    icon="palette"
-    href="https://mintlify.com/docs/settings/global"
-  >
-    Customize your docs to your company's colors and brands
-  </Card>
-  <Card
-    title="Reference APIs"
-    icon="code"
-    href="https://mintlify.com/docs/api-playground/openapi"
-  >
-    Automatically generate endpoints from an OpenAPI spec
-  </Card>
-  <Card
-    title="Add Components"
-    icon="screwdriver-wrench"
-    href="https://mintlify.com/docs/components/accordion"
-  >
-    Build interactive features and designs to guide your users
-  </Card>
-  <Card
-    title="Get Inspiration"
-    icon="stars"
-    href="https://mintlify.com/customers"
-  >
-    Check out our showcase of our favorite documentation
-  </Card>
-</CardGroup>
+```toml
+[dependencies]
+refined_type = "x.x.x"
+```

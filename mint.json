@@ -15,15 +15,10 @@
       "to": "#07C983"
     }
   },
-  "topbarLinks": [
-    {
-      "name": "Support",
-      "url": "mailto:hi@mintlify.com"
-    }
-  ],
+  "topbarLinks": [],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "name": "GitHub Repository",
+    "url": "https://github.com/tomoikey/refined-type"
   },
   "tabs": [
     {
@@ -43,14 +38,12 @@
       "group": "Get Started",
       "pages": [
         "introduction",
-        "quickstart",
-        "development"
+        "quickstart"
       ]
     }
   ],
   "footerSocials": {
     "x": "https://x.com/chuasupi",
-    "github": "https://github.com/tomoikey",
-    "qiita": "https://https://qiita.com/tomoikey"
+    "github": "https://github.com/tomoikey"
   }
 }
