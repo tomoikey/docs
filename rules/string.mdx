@@ -1,0 +1,117 @@
+---
+title: String
+description: 'built-in rules for String'
+---
+
+## AlphaDigit
+`AlphaDigit` is a type that signifies the target is composed only of alphabets and digits.
+
+```rust
+fn alpha_digit_example() -> Result<(), Error<String>> {
+    let alpha_digit = AlphaDigit::new("abc123".to_string())?;
+    assert_eq!(alpha_digit.into_value(), "abc123");
+
+    let alpha_digit = AlphaDigit::new("abc123!@#");
+    assert!(alpha_digit.is_err());
+
+    Ok(())
+}
+```
+
+## Alphabet
+`Alphabet` is a type that signifies the target is composed only of alphabets.
+
+```rust
+fn alphabet_example() -> Result<(), Error<String>> {
+    let alphabet = Alphabet::new("abc".to_string())?;
+    assert_eq!(alphabet.into_value(), "abc");
+
+    let alphabet = Alphabet::new("abc123");
+    assert!(alphabet.is_err());
+
+    Ok(())
+}
+```
+
+## Digit
+`Digit` is a type that signifies the target is composed only of digits.
+
+```rust
+fn digit_example() -> Result<(), Error<String>> {
+    let digit = Digit::new("123".to_string())?;
+    assert_eq!(digit.into_value(), "123");
+
+    let digit = Digit::new("abc123");
+    assert!(digit.is_err());
+
+    Ok(())
+}
+```
+
+## Email
+`Email` is a type that signifies the target is a valid email address.
+
+```rust
+fn email_example() -> Result<(), Error<String>> {
+    let email = Email::new("sample@example.com".to_string())?;
+    assert_eq!(email.into_value(), "sample@example.com");
+
+    let email = Email::new("example.com");
+    assert!(email.is_err());
+
+    Ok(())
+}
+```
+
+## Ipv4Addr
+`Ipv4` is a type that signifies the target is a valid IPv4 address.
+
+```rust
+fn ipv4_example() -> Result<(), Error<String>> {
+    let ipv4 = Ipv4Addr::new("100.0.0.1".to_string())?;
+    assert_eq!(ipv4.into_value(), "100.0.0.1");
+
+    let ipv4 = Ipv4Addr::new("100.0.0.256");
+    assert!(ipv4.is_err());
+
+    Ok(())
+}
+```
+
+## Ipv6Addr
+`Ipv6Addr` is a type that signifies the target is a valid IPv6 address.
+
+```rust
+fn ipv6_example() -> Result<(), Error<String>> {
+    let ipv6 = Ipv6Addr::new("2001:db8:3333:4444:5555:6666:7777:8888".to_string())?;
+    assert_eq!(ipv6.into_value(), "2001:db8:3333:4444:5555:6666:7777:8888");
+
+    let ipv6 = Ipv6Addr::new("2001:db8:3333:4444:5555:6666:7777:8888:9999");
+    assert!(ipv6.is_err());
+
+    Ok(())
+}
+```
+
+## Regex
+Regarding regex, since Rust **DOES NOT** currently support **const generics for String types**, `refined_type` takes an approach of generating rules using macros.
+This approach allows us to validate fields using regex patterns without relying on const generics for strings.
+
+```rust
+declare_regex_rule![
+    pub MyEmailRule,
+    r"^[a-zA-Z0-9_.+-]+@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[a-zA-Z]{2,}$"
+];
+
+type MyEmail = Refined<MyEmailRule>;
+
+fn regex_example() -> Result<(), Error<String>> {
+    let email = MyEmail::new("sample@example.com".to_string())?;
+    assert_eq!(email.into_value(), "sample@example.com");
+
+    let email = MyEmail::new("example.com");
+    assert!(email.is_err());
+
+    Ok(())
+}
+```

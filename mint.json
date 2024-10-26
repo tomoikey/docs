@@ -20,25 +20,22 @@
     "name": "GitHub Repository",
     "url": "https://github.com/tomoikey/refined-type"
   },
-  "tabs": [
-    {
-      "name": "API Reference",
-      "url": "api-reference"
-    }
-  ],
-  "anchors": [
-    {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
-    }
-  ],
+  "tabs": [],
+  "anchors": [],
   "navigation": [
     {
       "group": "Get Started",
       "pages": [
         "introduction",
         "quickstart"
+      ]
+    },
+    {
+      "group": "Built-In Rules",
+      "pages": [
+        "rules/string",
+        "rules/number",
+        "rules/collection"
       ]
     }
   ],
