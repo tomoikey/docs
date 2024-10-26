@@ -1,10 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "refined_type",
-  "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
-  },
+  "name": "refined type",
   "favicon": "/favicon.svg",
   "colors": {
     "primary": "#0D9373",
@@ -33,9 +29,9 @@
     {
       "group": "Rule Composer",
       "pages": [
-          "rules/and",
-          "rules/or",
-          "rules/not"
+          "rules/composer/and",
+          "rules/composer/or",
+          "rules/composer/not"
       ]
     },
     {
@@ -44,6 +40,13 @@
         "rules/builtin/string",
         "rules/builtin/number",
         "rules/builtin/collection"
+      ]
+    },
+    {
+      "group": "Custom Rules",
+      "pages": [
+        "rules/custom",
+        "rules/complex_rule"
       ]
     }
   ],

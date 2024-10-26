@@ -1,0 +1,95 @@
+---
+"title": 'Define a complex rule'
+"description": 'This page explains how to create a complex rule by combining multiple rules.'
+---
+
+## Overview
+The most important thing when creating complex rules is to **break them down into minimal rules**.
+By decomposing rules, their implementation becomes very simple and testing becomes easier.
+Furthermore, these decomposed rules can be reused in other situations.
+
+## Get Started
+Let’s create a type that represents a number that either:
+
+1. Falls within the range of **0–50**, is **even**, and is **NOT 10 or 20**
+2. Or falls within the range of **60–100**, is **odd**, and is **NOT 75 or 85**
+
+At first, define the 1st rule.
+```rust
+And![
+    MinMaxRuleU8<0, 50>,
+    EvenRuleU8,
+    Not<Or![EqualRuleU8<10>, EqualRuleU8<20>]>
+];
+```
+
+Next, define the 2nd rule.
+```rust
+And![
+    MinMaxRuleU8<60, 100>,
+    OddRuleU8,
+    Not<Or![EqualRuleU8<75>, EqualRuleU8<85>]>
+];
+```
+
+Now, combine these two rules using the `Or` rule composer.
+```rust
+type Target = Refined<
+    Or![
+        And![
+            MinMaxRuleU8<0, 50>,
+            EvenRuleU8,
+            Not<Or![EqualRuleU8<10>, EqualRuleU8<20>]>
+        ],
+        And![
+            MinMaxRuleU8<60, 100>,
+            OddRuleU8,
+            Not<Or![EqualRuleU8<75>, EqualRuleU8<85>]>
+        ]
+    ]
+>;
+```
+
+Let’s see how this rule works in practice.
+```rust
+fn complex_rule_example() -> Result<(), Error<u8>> {
+    let target = Target::new(0)?;
+    assert_eq!(target.into_value(), 0);
+
+    let target = Target::new(2)?;
+    assert_eq!(target.into_value(), 2);
+
+    let target = Target::new(10);
+    assert!(target.is_err());
+
+    let target = Target::new(20);
+    assert!(target.is_err());
+
+    let target = Target::new(50)?;
+    assert_eq!(target.into_value(), 50);
+
+    let target = Target::new(60);
+    assert!(target.is_err());
+
+    let target = Target::new(61)?;
+    assert_eq!(target.into_value(), 61);
+
+    let target = Target::new(75);
+    assert!(target.is_err());
+
+    let target = Target::new(85);
+    assert!(target.is_err());
+
+    let target = Target::new(100);
+    assert!(target.is_err());
+
+    let target = Target::new(101);
+    assert!(target.is_err());
+
+    Ok(())
+}
+```
+
+Even for complex cases, you can easily create a type! Naturally, if a value is held by this type, it guarantees that the complex rules specified earlier are satisfied.
+This means there’s no need for redundant validation on this type in subsequent processing.
+Be sure to use refined_type to write type-safe and runtime-safe programs!

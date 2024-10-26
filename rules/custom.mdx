@@ -1,0 +1,56 @@
+---
+"title": 'Define a custom rule'
+"description": 'This page explains how to create a custom rule.'
+---
+
+## Overview
+You can create custom rules by implementing the `Rule` trait.
+This allows you to define rules that are not provided by the library.
+
+## Get Started
+Let's create a custom rule that only accepts strings that start with `Hello`.
+
+At first, define a struct for the custom rule.
+```rust
+struct StartsWithHelloRule;
+```
+
+Next, implement the `Rule` trait for the struct.
+```rust
+use refined_type::Rule;
+use refined_type::result::Error;
+
+impl Rule for StartsWithHelloRule {
+    type Item = String;
+
+    fn validate(target: Self::Item) -> refined_type::Result<Self::Item> {
+        if target.starts_with("Hello") {
+            Ok(target)
+        } else {
+            Err(Error::new(target, "String does not start with 'Hello'"))
+        }
+    }
+}
+```
+
+Creating a type alias improves readability.
+```rust
+type StartsWithHello = Refined<StartsWithHelloRule>;
+```
+
+Now you can use the custom rule.
+```rust
+fn starts_with_hello_example() -> Result<(), Error<String>> {
+    let starts_with_hello = StartsWithHello::new("Hello, world".to_string())?;
+    assert_eq!(starts_with_hello.into_value(), "Hello, world");
+
+    let starts_with_hello = StartsWithHello::new("Hi, world".to_string());
+    assert!(starts_with_hello.is_err());
+
+    Ok(())
+}
+```
+
+That’s all for creating custom rules! It’s very simple!
+
+Now, if the standard provided rules aren’t sufficient, you can define your own rules!

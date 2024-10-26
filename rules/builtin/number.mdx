@@ -76,6 +76,36 @@ fn min_max_example() -> Result<(), Error<u8>> {
 }
 ```
 
+## Even
+`Even` is a type that signifies the target is an even number.
+
+```rust
+fn even_example() -> Result<(), Error<u8>> {
+    let even = EvenU8::new(2)?;
+    assert_eq!(even.into_value(), 2);
+
+    let even = EvenU8::new(3);
+    assert!(even.is_err());
+
+    Ok(())
+}
+```
+
+## Odd
+`Odd` is a type that signifies the target is an odd number.
+
+```rust
+fn odd_example() -> Result<(), Error<u8>> {
+    let odd = OddU8::new(3)?;
+    assert_eq!(odd.into_value(), 3);
+
+    let odd = OddU8::new(2);
+    assert!(odd.is_err());
+
+    Ok(())
+}
+```
+
 ## LessEqual
 COMING SOON...
 ```rust
