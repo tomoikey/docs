@@ -2,3 +2,153 @@
 title: Collection
 description: 'built-in rules for Collection'
 ---
+
+## Exists
+`Exists` is a rule that applies a specific rule to at least one element in the Iterator.
+
+```rust
+fn exists_example() -> anyhow::Result<()> {
+    let vec = vec!["Hello".to_string(), "".to_string()];
+    let exists_ok = ExistsVec::<NonEmptyStringRule>::new(vec.clone())?;
+    assert_eq!(vec, exists_ok.into_value());
+
+    let vec = vec!["".to_string(), "".to_string()];
+    let exists_err = ExistsVec::<NonEmptyStringRule>::new(vec.clone());
+    assert!(exists_err.is_err());
+    Ok(())
+}
+```
+
+## ForAll
+`ForAll` is a rule that applies a specific rule to all elements in the Iterator.
+
+```rust
+fn for_all_example() -> anyhow::Result<()> {
+    let vec = vec!["Hello".to_string(), "World".to_string()];
+    let for_all_ok = ForAllVec::<NonEmptyStringRule>::new(vec.clone())?;
+    assert_eq!(vec, for_all_ok.into_value());
+
+    let vec = vec!["Hello".to_string(), "".to_string()];
+    let for_all_err = ForAllVec::<NonEmptyStringRule>::new(vec.clone());
+    assert!(for_all_err.is_err());
+    Ok(())
+}
+```
+
+## Head
+`Head` is a rule that applies a specific rule to the first element in the Iterator.
+
+```rust
+fn head_example() -> anyhow::Result<()> {
+    let vec = vec!["good morning".to_string(), "".to_string()];
+    let head_ok = HeadVec::<NonEmptyStringRule>::new(vec.clone())?;
+    assert_eq!(vec, head_ok.into_value());
+
+    let vec = vec!["".to_string(), "hello".to_string()];
+    let head_err = HeadVec::<NonEmptyStringRule>::new(vec.clone());
+    assert!(head_err.is_err());
+
+    Ok(())
+}
+```
+
+## Index
+`Index` is a rule that applies a specific rule to the element at a specific index in the Iterator.
+
+```rust
+fn index_example() -> anyhow::Result<()> {
+    let vec = vec!["good morning".to_string(), "hello".to_string()];
+    let index_ok = IndexVec::<1, NonEmptyStringRule>::new(vec.clone())?;
+    assert_eq!(vec, index_ok.into_value());
+
+    let vec = vec!["good morning".to_string(), "".to_string()];
+    let index_err = IndexVec::<1, NonEmptyStringRule>::new(vec.clone());
+    assert!(index_err.is_err());
+
+    Ok(())
+}
+```
+
+## Init
+`Init` is a rule that applies a specific rule to all elements except the last element in the Iterator.
+
+```rust
+fn init_example() -> anyhow::Result<()> {
+    let vec = vec!["hey".to_string(), "hello".to_string(), "world".to_string()];
+    let init_ok = InitVec::<NonEmptyStringRule>::new(vec.clone())?;
+    assert_eq!(vec, init_ok.into_value());
+
+    let vec = vec!["hey".to_string(), "".to_string(), "world".to_string()];
+    let init_err = InitVec::<NonEmptyStringRule>::new(vec.clone());
+    assert!(init_err.is_err());
+
+    Ok(())
+}
+```
+
+## Last
+`Last` is a rule that applies a specific rule to the last element in the Iterator.
+
+```rust
+fn last_example() -> anyhow::Result<()> {
+    let vec = vec!["".to_string(), "hello".to_string()];
+    let last_ok = LastVec::<NonEmptyStringRule>::new(vec.clone())?;
+    assert_eq!(vec, last_ok.into_value());
+
+    let vec = vec!["hello".to_string(), "".to_string()];
+    let last_err = LastVec::<NonEmptyStringRule>::new(vec.clone());
+    assert!(last_err.is_err());
+
+    Ok(())
+}
+```
+
+## Reverse
+`Reverse` is a rule that applies a specific rule to all elements in the Iterator in reverse order.
+
+```rust
+fn reverse_example() -> anyhow::Result<()> {
+    let vec = vec!["good morning".to_string(), "".to_string()];
+    let reverse_ok = Reverse::<IndexRuleVec<0, NonEmptyStringRule>>::new(vec.clone())?;
+    assert_eq!(vec, reverse_ok.into_value());
+
+    let vec = vec!["".to_string(), "hello".to_string()];
+    let reverse_err = Reverse::<IndexRuleVec<0, NonEmptyStringRule>>::new(vec.clone());
+    assert!(reverse_err.is_err());
+
+    Ok(())
+}
+```
+
+## Skip
+`Skip` is a rule that applies a specific rule to the elements of the Iterator while skipping the elements according to `SkipOption`.
+
+```rust
+fn skip_example() -> anyhow::Result<()> {
+    let vec = vec!["".to_string(), "hello".to_string(), "world".to_string()];
+    let skip_ok = SkipVec::<NonEmptyStringRule, SkipFirst<_>>::new(vec.clone())?;
+    assert_eq!(vec, skip_ok.into_value());
+
+    let vec = vec!["".to_string(), "".to_string(), "world".to_string()];
+    let skip_err = SkipVec::<NonEmptyStringRule, SkipFirst<_>>::new(vec.clone());
+    assert!(skip_err.is_err());
+
+    Ok(())
+}
+```
+
+if you need more skip option, you can define it like this.
+
+```rust
+pub struct NoSkip<T> {
+    _phantom_data: std::marker::PhantomData<T>,
+}
+
+impl<ITEM> SkipOption for NoSkip<ITEM> {
+    type Item = ITEM;
+    type Accumulator = ();
+    fn should_skip(_: usize, _: Option<&mut Self::Accumulator>, _: &Self::Item) -> bool {
+        false
+    }
+}
+```
