@@ -31,11 +31,19 @@
       ]
     },
     {
+      "group": "Rule Composer",
+      "pages": [
+          "rules/and",
+          "rules/or",
+          "rules/not"
+      ]
+    },
+    {
       "group": "Built-In Rules",
       "pages": [
-        "rules/string",
-        "rules/number",
-        "rules/collection"
+        "rules/builtin/string",
+        "rules/builtin/number",
+        "rules/builtin/collection"
       ]
     }
   ],

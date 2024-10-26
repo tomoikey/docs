@@ -1,0 +1,31 @@
+---
+"title": 'And'
+"description": '`And` is a rule composer that combines the results of two rules. Both rules must be satisfied for the `And` rule to be satisfied.'
+---
+
+## Overview
+To create a rule that is only satisfied when both a specific rule and another rule are met, you can use the `And` Rule Composer.
+This composer allows you to combine multiple rules in a way that the overall condition is fulfilled only when each individual rule within the composition is satisfied.
+
+## Example
+For example, let’s consider a case where we only allow **even integers** within the range of **0 to 100**.
+
+```rust
+type Target = Refined<And![EvenRuleU8, MinMaxRuleU8<0, 100>]>;
+```
+
+In this example, the `Target` type is defined as a refined type that only accepts even integers within the range of 0 to 100.
+
+Let’s see how this rule works in practice.
+
+```rust
+fn and_example() -> Result<(), Error<u8>> {
+    let target = Target::new(50)?;
+    assert_eq!(target.into_value(), 50);
+
+    let target = Target::new(51);
+    assert!(target.is_err());
+
+    Ok(())
+}
+```
